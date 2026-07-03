@@ -180,9 +180,9 @@ func locateOrBuildMercury(t *testing.T, repoRoot string) string {
 		t.Fatalf("MERCURY_BIN is set but not executable: %s", env)
 	}
 
-	name := "mercury"
+	name := "mercuryfm"
 	if runtime.GOOS == "windows" {
-		name = "mercury.exe"
+		name = "mercuryfm.exe"
 	}
 	candidate := filepath.Join(repoRoot, name)
 	if executableExists(candidate) {

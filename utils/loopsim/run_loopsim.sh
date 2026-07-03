@@ -20,14 +20,14 @@
 # Usage: run_loopsim.sh [FWD_NOISE] [REV_NOISE]
 #   FWD_NOISE / REV_NOISE : noisebridge stddev fraction (default 0.0 = clean).
 #                           ~1.0 ≈ -4 dB SNR; ~2.0 stalls a marginal ACK path.
-# Env overrides: MERCURY=./mercury  CARD=2  (loopback card index)
+# Env overrides: MERCURY=./mercuryfm  CARD=2  (loopback card index)
 #
 # Logs: /tmp/mA.log, /tmp/mB.log.  Drive a transfer with drive.py.
 #
 # Copyright (C) 2026 Rhizomatica  /  SPDX-License-Identifier: GPL-3.0-or-later
 set -u
 FWD=${1:-0.0}; REV=${2:-0.0}
-MERCURY=${MERCURY:-./mercury}
+MERCURY=${MERCURY:-./mercuryfm}
 CARD=${CARD:-2}
 NB="$(dirname "$0")/noisebridge"
 AF="-f S32_LE -r 48000 -c 2"

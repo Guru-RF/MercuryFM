@@ -3,12 +3,14 @@
 *.o
 *.a
 mercury
+mercuryfm
 mercury.exe
 *.exe
 *.dll
 *.so
 *.log
 build-*.log
+mercuryfm.ini
 mercury.ini
 .DS_Store
 .git_hash_stamp

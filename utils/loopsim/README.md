@@ -37,7 +37,7 @@ PAYLOAD=5120 python3 drive.py         # transfer 5 KB A->B, report bytes/bps/mat
 ./run_loopsim.sh 0.0 2.0              # rev noise harsher: stalls (ACKs fail)
 PAYLOAD=5120 python3 drive.py
 ```
-Env: `MERCURY=./mercury CARD=2` override the binary path / loopback card index.
+Env: `MERCURY=./mercuryfm CARD=2` override the binary path / loopback card index.
 Mercury logs: `/tmp/mA.log` (caller), `/tmp/mB.log` (listener).
 
 ## A/B two builds

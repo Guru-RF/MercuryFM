@@ -35,8 +35,8 @@ xcode-select --install        # clang + make, if not already present
 brew install pkg-config        # + optionally: brew install hamlib
 
 make CC=clang -j
-./mercury -l                   # list modulation modes (proves the modem inits)
-./mercury -h
+./mercuryfm -l                   # list modulation modes (proves the modem inits)
+./mercuryfm -h
 ```
 
 Produces a native `arm64` Mach-O binary using the **CoreAudio** backend
@@ -46,13 +46,13 @@ Produces a native `arm64` Mach-O binary using the **CoreAudio** backend
 
 A [`Dockerfile`](Dockerfile) mirrors the upstream Debian build (ALSA + PulseAudio +
 HAMLIB). On Apple Silicon, [Apple's `container`](https://github.com/apple/container) runs
-it natively as `linux/arm64` and smoke-tests the binary (`mercury -l`) at build time:
+it natively as `linux/arm64` and smoke-tests the binary (`mercuryfm -l`) at build time:
 
 ```bash
 container system start                                   # once per boot, if needed
 container build --platform linux/arm64 -t mercuryfm:trixie-arm64 .
 container run --rm mercuryfm:trixie-arm64                # prints -h
-container run --rm mercuryfm:trixie-arm64 ./mercury -l   # list modes
+container run --rm mercuryfm:trixie-arm64 ./mercuryfm -l   # list modes
 ```
 
 The same `Dockerfile` works with Docker/Podman (`docker build --platform linux/arm64 .`).

@@ -1,13 +1,13 @@
 '\" t
-.\" mercury.1 - man page for the Mercury HF modem
+.\" mercuryfm.1 - man page for the MercuryFM HF modem
 .\" Copyright (C) 2025 Rhizomatica
 .\" Author: Rafael Diniz <rafael@riseup.net>
 .\" SPDX-License-Identifier: GPL-3.0-or-later
-.TH MERCURY 1 "2026" "Mercury 1.9.9" "Mercury Manual"
+.TH MERCURYFM 1 "2026" "MercuryFM 1.9.9" "MercuryFM Manual"
 .SH NAME
-mercury \- HF radio modem with ARQ and broadcast data links
+mercuryfm \- HF radio modem with ARQ and broadcast data links
 .SH SYNOPSIS
-.B mercury
+.B mercuryfm
 .RB [ \-i
 .IR device ]
 .RB [ \-o
@@ -28,10 +28,10 @@ mercury \- HF radio modem with ARQ and broadcast data links
 .RB [ \-G ]
 .RB [ options ]
 .br
-.B mercury
+.B mercuryfm
 .RB [ \-l " | " \-z " | " \-K " | " \-h ]
 .SH DESCRIPTION
-.B mercury
+.B mercuryfm
 is the modem component of the HERMES (High-Frequency Emergency and Rural
 Multimedia Exchange System) project.
 It provides ARQ (Automatic Repeat reQuest) and broadcast data links over
@@ -43,7 +43,7 @@ DATAC17, QAM16C2) based on measured channel SNR, providing per-direction
 mode selection and a reliability ladder that steps down immediately on
 errors and steps up after consecutive clean acknowledgements.
 .PP
-Mercury exposes a VARA-compatible TNC (Terminal Node Controller) TCP
+MercuryFM exposes a VARA-compatible TNC (Terminal Node Controller) TCP
 interface, allowing existing amateur radio software such as UUCP, Winlink,
 and Pat to connect without modification.
 .SH OPTIONS
@@ -146,7 +146,7 @@ Default is
 .TP
 .B \-G
 Enable UI communication (WebSocket server for
-.BR mercury-qt ).
+.BR mercuryfm-qt ).
 Off by default.
 .TP
 .BI \-U " port"
@@ -212,7 +212,7 @@ Linux only.
 .BI \-C " path"
 Path to init configuration file (INI format).
 Default is
-.B mercury.ini
+.B mercuryfm.ini
 in the current directory.
 See
 .B CONFIGURATION FILE
@@ -221,9 +221,9 @@ below.
 .B \-h
 Print usage help and exit.
 .SH CONFIGURATION FILE
-Mercury reads an INI-format configuration file at startup.
+MercuryFM reads an INI-format configuration file at startup.
 The default path is
-.B mercury.ini
+.B mercuryfm.ini
 in the current working directory; use
 .B \-C
 to specify an alternative path.
@@ -263,7 +263,7 @@ selected radio model.
 It must match the CAT Rate configured on the radio.
 Common values are 4800, 9600, 19200, 38400, and 115200.
 .SH TNC INTERFACE
-Mercury provides a VARA-compatible TCP TNC interface for ARQ operations.
+MercuryFM provides a VARA-compatible TCP TNC interface for ARQ operations.
 The control port accepts text commands terminated by a carriage return,
 and sends asynchronous status responses.
 The data port carries the raw byte stream.
@@ -272,7 +272,7 @@ The data port carries the raw byte stream.
 .BI "MYCALL " "callsign " "[secondary1 secondary2 ...]"
 Set the local station callsign (up to 15 characters).
 Additional space-separated tokens register secondary callsigns (up to 4);
-Mercury will accept incoming connections addressed to any of them.
+MercuryFM will accept incoming connections addressed to any of them.
 Sending a new MYCALL replaces the primary callsign and clears all
 previously registered secondaries.
 .TP
@@ -385,7 +385,7 @@ Current bitrate in bits per second and the speed ladder level.
 Received a CQ broadcast from
 .IR callsign .
 .SH FREEDV MODES
-Mercury uses the following FreeDV OFDM waveforms:
+MercuryFM uses the following FreeDV OFDM waveforms:
 .PP
 .TS
 l l l l.
@@ -422,11 +422,11 @@ Broadcast	8100	TCP
 UI (WebSocket)	10000	TCP
 .TE
 .SH EXAMPLES
-Start mercury with default settings (ALSA, DATAC3, port 8300):
+Start mercuryfm with default settings (ALSA, DATAC3, port 8300):
 .PP
 .RS
 .nf
-mercury \-i plughw:1,0 \-o plughw:1,0
+mercuryfm \-i plughw:1,0 \-o plughw:1,0
 .fi
 .RE
 .PP
@@ -434,7 +434,7 @@ Start with verbose logging to a JSONL file:
 .PP
 .RS
 .nf
-mercury \-i plughw:1,0 \-o plughw:1,0 \-v \-L /var/log/mercury.jsonl \-J
+mercuryfm \-i plughw:1,0 \-o plughw:1,0 \-v \-L /var/log/mercuryfm.jsonl \-J
 .fi
 .RE
 .PP
@@ -442,7 +442,7 @@ Start with Hamlib radio control (rigctld on localhost):
 .PP
 .RS
 .nf
-mercury \-i plughw:1,0 \-o plughw:1,0 \-R 2 \-A localhost:4532
+mercuryfm \-i plughw:1,0 \-o plughw:1,0 \-R 2 \-A localhost:4532
 .fi
 .RE
 .PP
@@ -450,7 +450,7 @@ Start with Hamlib radio control on a serial port (Yaesu FT-710 on Windows):
 .PP
 .RS
 .nf
-mercury \-i dsound \-o dsound \-R 1049 \-A COM3
+mercuryfm \-i dsound \-o dsound \-R 1049 \-A COM3
 .fi
 .RE
 .PP
@@ -458,7 +458,7 @@ Start with HERMES shared memory PTT control:
 .PP
 .RS
 .nf
-mercury \-i plughw:1,0 \-o plughw:1,0 \-S
+mercuryfm \-i plughw:1,0 \-o plughw:1,0 \-S
 .fi
 .RE
 .PP
@@ -466,7 +466,7 @@ Start with PulseAudio, narrow bandwidth, and GUI enabled over WSS:
 .PP
 .RS
 .nf
-mercury \-x pulse \-m 3 \-G \-T
+mercuryfm \-x pulse \-m 3 \-G \-T
 .fi
 .RE
 .PP
@@ -474,7 +474,7 @@ Use a custom configuration file:
 .PP
 .RS
 .nf
-mercury \-C /etc/mercury/my_config.ini
+mercuryfm \-C /etc/mercuryfm/my_config.ini
 .fi
 .RE
 .PP
@@ -482,7 +482,7 @@ List available modulation modes:
 .PP
 .RS
 .nf
-mercury \-l
+mercuryfm \-l
 .fi
 .RE
 .PP
@@ -490,7 +490,7 @@ List available sound cards:
 .PP
 .RS
 .nf
-mercury \-z
+mercuryfm \-z
 .fi
 .RE
 .PP
@@ -498,14 +498,14 @@ List supported Hamlib radio models:
 .PP
 .RS
 .nf
-mercury \-K
+mercuryfm \-K
 .fi
 .RE
 .SH SIGNALS
 .TP
 .B SIGINT\fR, \fBSIGTERM
 Graceful shutdown.
-Mercury releases audio devices, closes TCP connections, and shuts down
+MercuryFM releases audio devices, closes TCP connections, and shuts down
 the radio control interface before exiting.
 .SH SEE ALSO
 .BR rigctld (1),

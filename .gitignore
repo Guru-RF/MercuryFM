@@ -2,6 +2,7 @@
 *.o
 *.a
 mercury
+mercuryfm
 *.exe
 *.dll
 *.so
@@ -22,7 +23,8 @@ Thumbs.db
 /tmp/
 *.tmp
 
-# User config (copy mercury.ini.example to mercury.ini)
+# User config (copy mercuryfm.ini.example to mercuryfm.ini)
+mercuryfm.ini
 mercury.ini
 
 .git_hash_stamp

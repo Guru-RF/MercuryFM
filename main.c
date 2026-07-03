@@ -146,7 +146,7 @@ static void print_usage(const char *prog)
 #else
     printf(" -S                         HERMES shared memory radio control (Linux-only; unavailable in this build).\n");
 #endif
-    printf(" -C [config_file]           Path to init configuration file (INI format). Default is mercury.ini in the current directory.\n");
+    printf(" -C [config_file]           Path to init configuration file (INI format). Default is mercuryfm.ini in the current directory.\n");
     printf(" -K                         List HAMLIB supported radio models.\n");
     printf(" -t                         Test TX mode.\n");
     printf(" -r                         Test RX mode.\n");
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
     // --- Load init configuration file ---
     // First pass: extract -C config path only
     const char *optstring = "hc:s:m:f:H:k:li:o:x:p:b:zvtrL:JR:U:A:C:SKWGT";
-    const char *cfg_path = "mercury.ini";
+    const char *cfg_path = "mercuryfm.ini";
     int opt;
     while ((opt = getopt(argc, argv, optstring)) != -1)
     {
@@ -729,6 +729,7 @@ int main(int argc, char *argv[])
     mcfg.hamlib_log_level  = hamlib_log_level;
     mcfg.radio_serial_speed = radio_serial_speed;
 
+#ifndef WITHOUT_UI
     ui_ctx_t ui_ctx;
     if (ui_enabled)
     {
@@ -748,6 +749,13 @@ int main(int argc, char *argv[])
         memset(&ui_ctx, 0, sizeof(ui_ctx));
         HLOGI("main", "UI communication disabled (use -G to enable).");
     }
+#else
+    /* Built with WITHOUT_UI=1: the -G WebSocket UI (and GPL-2.0-only Mongoose)
+     * is compiled out. This binary is pure GPL-3.0-or-later. */
+    if (ui_enabled)
+        HLOGW("main", "UI requested (-G) but this build was compiled WITHOUT_UI; ignoring.");
+    ui_enabled = false;
+#endif
 
     while (!shutdown_)
         msleep(500);
@@ -775,8 +783,10 @@ int main(int argc, char *argv[])
         audioio_deinit(&radio_capture, &radio_playback);
     }
 
+#ifndef WITHOUT_UI
     if (ui_enabled)
         ui_comm_shutdown(&ui_ctx);
+#endif
 
     radio_io_shutdown();
     HLOGI("main", "Shutting down");

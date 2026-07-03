@@ -85,10 +85,21 @@ endif
 
 CFLAGS = $(COMMON_CFLAGS) -Imodem/freedv -Imodem -Idatalink_broadcast -Idata_interfaces -Idatalink_arq -Iaudioio/ffaudio -Icommon -Igui_interface -Iradio_io $(HAMLIB_CFLAGS) $(HERMES_SHM_CFLAGS)
 
-ifeq ($(OS),Windows_NT)
-BINARY = mercury.exe
+# Optional: build without the -G WebSocket UI. This drops the GPL-2.0-only
+# Mongoose dependency, yielding a pure GPL-3.0-or-later binary that is freely
+# distributable. Enable with:  make WITHOUT_UI=1
+WITHOUT_UI ?= 0
+ifeq ($(WITHOUT_UI),1)
+CFLAGS += -DWITHOUT_UI
+GUI_LINK_INPUTS =
 else
-BINARY = mercury
+GUI_LINK_INPUTS = gui_interface/ui_communication.o gui_interface/websocket/mongoose.o gui_interface/websocket/mercury_websocket.o
+endif
+
+ifeq ($(OS),Windows_NT)
+BINARY = mercuryfm.exe
+else
+BINARY = mercuryfm
 endif
 
 LDFLAGS=$(FFAUDIO_LINKFLAGS) -lm $(HAMLIB_LDFLAGS)
@@ -100,8 +111,7 @@ MERCURY_LINK_INPUTS = \
 	datalink_broadcast/broadcast.o datalink_broadcast/kiss.o modem/modem.o modem/framer.o modem/freedv/libfreedvdata.a \
 	audioio/audioio.a common/os_interop.o common/ring_buffer_posix.o common/shm_posix.o common/crc6.o common/hermes_log.o \
 	common/chan.o common/queue.o data_interfaces/tcp_interfaces.o data_interfaces/net.o \
-	gui_interface/ui_communication.o \
-	gui_interface/websocket/mongoose.o gui_interface/websocket/mercury_websocket.o \
+	$(GUI_LINK_INPUTS) \
 	radio_io/radio_io.o
 
 ifeq ($(HAVE_HERMES_SHM),1)
@@ -121,12 +131,12 @@ endif
 	$(MAKE) $(BINARY)
 	$(MAKE) -C utils
 
-docdir ?= $(prefix)/share/doc/mercury
+docdir ?= $(prefix)/share/doc/mercuryfm
 
 install: all
-	install -D -m 755 $(BINARY) $(DESTDIR)$(bindir)/mercury
-	install -D -m 644 mercury.1 $(DESTDIR)$(mandir)/man1/mercury.1
-	install -D -m 644 mercury.ini.example $(DESTDIR)$(docdir)/mercury.ini.example
+	install -D -m 755 $(BINARY) $(DESTDIR)$(bindir)/mercuryfm
+	install -D -m 644 mercuryfm.1 $(DESTDIR)$(mandir)/man1/mercuryfm.1
+	install -D -m 644 mercuryfm.ini.example $(DESTDIR)$(docdir)/mercuryfm.ini.example
 
 $(BINARY): $(MERCURY_LINK_INPUTS)
 	$(CC) -o $(BINARY)  \
@@ -152,7 +162,9 @@ internal_deps:
 	$(MAKE) -C data_interfaces
 	$(MAKE) -C audioio
 	$(MAKE) -C common
+ifneq ($(WITHOUT_UI),1)
 	$(MAKE) -C gui_interface
+endif
 	$(MAKE) -C radio_io
 
 windows:
@@ -160,14 +172,14 @@ windows:
 	$(MAKE) -j$$(nproc) OS=Windows_NT CC=$(MINGW_CC) AR=$(MINGW_AR)
 
 MERCURY_VERSION ?= $(shell grep 'define VERSION__' main.c | head -1 | sed 's/.*"\(.*\)".*/\1/')
-WINDOWS_DIR = mercury-$(MERCURY_VERSION)
+WINDOWS_DIR = mercuryfm-$(MERCURY_VERSION)
 WINDOWS_ZIP = $(WINDOWS_DIR)-w64-$(GIT_HASH).zip
 
 windows-zip: windows
 	rm -rf $(WINDOWS_DIR) $(WINDOWS_ZIP)
 	mkdir -p $(WINDOWS_DIR)
-	cp mercury.exe $(WINDOWS_DIR)/
-	cp mercury.ini.example $(WINDOWS_DIR)/
+	cp mercuryfm.exe $(WINDOWS_DIR)/
+	cp mercuryfm.ini.example $(WINDOWS_DIR)/
 	if ls $(HAMLIB_W64_DIR)/bin/*.dll >/dev/null 2>&1; then \
 		cp $(HAMLIB_W64_DIR)/bin/*.dll $(WINDOWS_DIR)/; \
 	fi
@@ -176,8 +188,8 @@ windows-zip: windows
 	@echo "Created $(WINDOWS_ZIP)"
 
 clean:
-	rm -f mercury mercury.exe *.o .git_hash_stamp mercury-*.zip
-	rm -rf mercury-[0-9]*
+	rm -f mercuryfm mercuryfm.exe mercury mercury.exe *.o .git_hash_stamp mercuryfm-*.zip mercury-*.zip
+	rm -rf mercuryfm-[0-9]* mercury-[0-9]*
 	$(MAKE) -C modem clean
 	$(MAKE) -C datalink_arq clean
 	$(MAKE) -C datalink_broadcast clean
