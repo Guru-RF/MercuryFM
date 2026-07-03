@@ -1,0 +1,53 @@
+mercury (1.9.9-1) unstable; urgency=medium
+
+  * Release 1.9.9.
+  * Improve hamlib list models output.
+  * Improve PWA responsive layout for mobile view.
+  * Update installation guide on README.
+  * Add implementation plan for ARQ robustness and TX gain control.
+  * Harden keepalive handling and add mode-revert notification.
+
+ -- Rafael Diniz <rafael@riseup.net>  Thu, 28 May 2026 20:18:47 +0000
+
+mercury (1.9.8-1) unstable; urgency=medium
+
+  * Release 1.9.8.
+  * Added CALLINT command.
+  * Update broadcast for VARA clients support.
+  * Fixes for PulseAudio.
+
+ -- Rafael Diniz <rafael@riseup.net>  Tue, 25 Apr 2026 10:19:00 +0000
+
+mercury (1.9.7-1) unstable; urgency=medium
+
+  * Release 1.9.7.
+  * Fix Windows ARQ socket reads (replace WSAPoll with select).
+  * Add radio_serial_speed config for hamlib baud rate override.
+  * Add MYCALL secondary callsigns support (up to 4).
+  * Add VARA commands: ABORT, VERSION, IGNOREKISSDCD, LISTEN CQ.
+
+ -- Rafael Diniz <rafael@riseup.net>  Tue, 15 Apr 2026 12:00:00 +0100
+
+mercury (1.9.6-1) unstable; urgency=medium
+
+  * Release 1.9.6.
+
+ -- Rafael Diniz <rafael@riseup.net>  Fri, 10 Apr 2026 16:01:00 +0100
+
+mercury (1.9.5-1) unstable; urgency=medium
+
+  * Release 1.9.5.
+
+ -- Rafael Diniz <rafael@riseup.net>  Mon, 23 Mar 2026 00:30:00 +0000
+
+mercury (1.9.4-1) unstable; urgency=medium
+
+  * Release 1.9.4.
+
+ -- Rafael Diniz <rafael@riseup.net>  Thu, 12 Mar 2026 01:29:00 +0000
+
+mercury (1.9.3-1) unstable; urgency=medium
+
+  * Release 1.9.3.
+
+ -- Rafael Diniz <rafael@riseup.net>  Thu, 06 Mar 2026 20:58:00 +0000

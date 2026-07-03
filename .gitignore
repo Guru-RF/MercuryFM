@@ -1,0 +1,57 @@
+# Build artifacts
+*.o
+*.a
+mercury
+*.exe
+*.dll
+*.so
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+/tmp/
+*.tmp
+
+# User config (copy mercury.ini.example to mercury.ini)
+mercury.ini
+
+.git_hash_stamp
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# FreeDV binaries
+modem/freedv/freedv_data_raw_rx
+modem/freedv/freedv_data_raw_tx
+modem/freedv/freedv_data_rx
+modem/freedv/freedv_data_tx
+modem/freedv/libfreedvdata.a
+
+# Broadcast binaries
+utils/broadcast_diag_rx
+utils/broadcast_diag_tx
+utils/broadcast_test
+
+# Test binaries
+tests/test_*
+
+# Bench/scratch artifacts (never commit)
+tap-*.f64
+*.champion
+mercury.lnx
+logs/
+claude_context.txt
+context-*.txt
+copilot-*.txt
+screen.jpg

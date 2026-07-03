@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['handle_5fcmd_0',['handle_cmd',['../arq_8c.html#a43cdb08aa62b0a621477ca7a092e9d7d',1,'arq.c']]]
+];

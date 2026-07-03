@@ -1,0 +1,20 @@
+# Keep the build context small and free of host artifacts.
+.git
+*.o
+*.a
+mercury
+mercury.exe
+*.exe
+*.dll
+*.so
+*.log
+build-*.log
+mercury.ini
+.DS_Store
+.git_hash_stamp
+
+# Windows-only prebuilt hamlib (Linux build uses system libhamlib-dev)
+radio_io/hamlib-w64
+
+# Prebuilt web UI bundle (not needed to build the binary)
+docs/app

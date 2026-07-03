@@ -1,0 +1,525 @@
+'\" t
+.\" mercury.1 - man page for the Mercury HF modem
+.\" Copyright (C) 2025 Rhizomatica
+.\" Author: Rafael Diniz <rafael@riseup.net>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH MERCURY 1 "2026" "Mercury 1.9.9" "Mercury Manual"
+.SH NAME
+mercury \- HF radio modem with ARQ and broadcast data links
+.SH SYNOPSIS
+.B mercury
+.RB [ \-i
+.IR device ]
+.RB [ \-o
+.IR device ]
+.RB [ \-x
+.IR sound_system ]
+.RB [ \-m
+.IR mode_index ]
+.RB [ \-p
+.IR port ]
+.RB [ \-b
+.IR port ]
+.RB [ \-R
+.IR model ]
+.RB [ \-A
+.IR address ]
+.RB [ \-S ]
+.RB [ \-G ]
+.RB [ options ]
+.br
+.B mercury
+.RB [ \-l " | " \-z " | " \-K " | " \-h ]
+.SH DESCRIPTION
+.B mercury
+is the modem component of the HERMES (High-Frequency Emergency and Rural
+Multimedia Exchange System) project.
+It provides ARQ (Automatic Repeat reQuest) and broadcast data links over
+HF radio using FreeDV OFDM waveforms with LDPC forward error correction.
+.PP
+The ARQ link implements a half-duplex stop-and-wait protocol with adaptive
+gear-shifting between FreeDV modes (DATAC15, DATAC4, DATAC3, DATAC1,
+DATAC17, QAM16C2) based on measured channel SNR, providing per-direction
+mode selection and a reliability ladder that steps down immediately on
+errors and steps up after consecutive clean acknowledgements.
+.PP
+Mercury exposes a VARA-compatible TNC (Terminal Node Controller) TCP
+interface, allowing existing amateur radio software such as UUCP, Winlink,
+and Pat to connect without modification.
+.SH OPTIONS
+.SS "Audio options"
+.TP
+.BI \-i " device"
+Radio capture (input) device identifier.
+For ALSA, use a device string such as \(lqplughw:0,0\(rq.
+For PulseAudio, WASAPI, or DirectSound, omit this option to use the system default.
+.TP
+.BI \-o " device"
+Radio playback (output) device identifier.
+Same format as
+.BR \-i .
+.TP
+.BI \-x " sound_system"
+Audio subsystem to use.
+Valid values:
+.BR alsa ,
+.BR pulse ,
+.BR dsound ,
+.BR wasapi ,
+.BR oss ,
+.BR coreaudio ,
+.BR aaudio ,
+.BR shm ,
+or
+.BR null ,
+or
+.BR fifo .
+Default is
+.B alsa
+on Linux and
+.B dsound
+on Windows.
+.B null
+is a developer/test backend that feeds RX silence and discards TX audio.
+.B fifo
+is a developer/test backend using raw signed 32-bit little-endian PCM at 8 kHz via
+.B \-i
+and
+.B \-o
+paths.
+.TP
+.BI \-k " channel"
+Capture input channel layout:
+.BR left ,
+.BR right ,
+or
+.BR stereo .
+Default is
+.BR left .
+.TP
+.B \-z
+List all available sound cards for the selected audio subsystem and exit.
+.SS "Modem options"
+.TP
+.BI \-m " mode_index"
+Startup payload mode index (see
+.BR \-l ).
+Used for broadcast and idle/disconnected ARQ decode.
+Default is 1 (DATAC3).
+.TP
+.BI \-s " mode_index"
+Legacy alias for
+.BR \-m .
+.TP
+.BI \-f " level"
+FreeDV modem verbosity level, 0 to 3.
+Default is 0.
+.TP
+.BI \-H " level"
+Hamlib radio log level, 0 to 6. 0=NONE, 1=BUG, 2=ERR, 3=WARN, 4=VERBOSE, 5=TRACE, 6=CACHE.
+Default is 0.
+.TP
+.B \-l
+List all available modulation/coding modes with their parameters and exit.
+.TP
+.B \-t
+Test TX (transmit) mode.
+.TP
+.B \-r
+Test RX (receive) mode.
+.SS "Network options"
+.TP
+.BI \-p " port"
+ARQ TCP base port.
+The control port is
+.IR port ,
+and the data port is
+.IR port +1.
+Default is
+.BR 8300 .
+.TP
+.BI \-b " port"
+Broadcast TCP port.
+Default is
+.BR 8100 .
+.SS "UI options"
+.TP
+.B \-G
+Enable UI communication (WebSocket server for
+.BR mercury-qt ).
+Off by default.
+.TP
+.BI \-U " port"
+UI WebSocket port.
+Default is
+.BR 10000 .
+Requires
+.BR \-G .
+.TP
+.B \-T
+Use WSS (WebSocket Secure / TLS) for UI communication instead of plain WS.
+Requires
+.BR \-G .
+.TP
+.B \-W
+Disable waterfall/spectrum data sent to the UI (saves CPU).
+.SS "Radio control options"
+.TP
+.BI \-R " model"
+Set Hamlib radio model (numeric ID).
+Use
+.B \-K
+to list available models.
+.TP
+.BI \-A " address"
+Set Hamlib radio device file or ip:port address (e.g.,
+.IR /dev/ttyUSB0 ,
+.IR COM3 ,
+or
+.IR localhost:4532 ).
+.TP
+.B \-S
+Use HERMES shared memory interface for PTT control instead of Hamlib.
+Mutually exclusive with
+.B \-R
+and
+.BR \-A .
+Available only on Linux builds.
+.TP
+.B \-K
+List Hamlib supported radio models and exit.
+.SS "Logging options"
+.TP
+.BI \-L " path"
+Write log to file (TIMING level and above).
+In verbose mode, log level is DEBUG.
+.TP
+.B \-J
+Use JSONL format for the log file (requires
+.BR \-L ).
+.TP
+.B \-v
+Verbose mode.
+Enables debug-level logging.
+.SS "System options"
+.TP
+.BI \-c " cpu"
+Pin the process to CPU number
+.IR cpu .
+Use \-1 to disable CPU selection (default).
+Linux only.
+.TP
+.BI \-C " path"
+Path to init configuration file (INI format).
+Default is
+.B mercury.ini
+in the current directory.
+See
+.B CONFIGURATION FILE
+below.
+.TP
+.B \-h
+Print usage help and exit.
+.SH CONFIGURATION FILE
+Mercury reads an INI-format configuration file at startup.
+The default path is
+.B mercury.ini
+in the current working directory; use
+.B \-C
+to specify an alternative path.
+Command-line arguments take priority over file values.
+.PP
+All settings are under the
+.B [main]
+section.
+The recognized keys are:
+.PP
+.TS
+l l l.
+Key	Default	Description
+_
+ui_enabled	false	Enable WebSocket UI server
+ui_port	10000	WebSocket port
+ui_protocol	ws	ws (plain) or wss (TLS)
+waterfall_enabled	true	Send waterfall/spectrum data to UI
+radio_model	\-1	Hamlib model ID (\-1=none, 0=SHM)
+radio_device	(empty)	Serial device or ip:port
+radio_serial_speed	0	Serial baud rate (0=hamlib default)
+input_device	(empty)	Audio capture device
+output_device	(empty)	Audio playback device
+capture_channel	left	left, right, or stereo
+sound_system	auto	Audio subsystem
+arq_tcp_base_port	8300	ARQ TCP base port
+broadcast_tcp_port	8100	Broadcast TCP port
+verbose	false	Enable debug logging
+freedv_verbosity	0	FreeDV modem verbosity (0\-3)
+hamlib_log_level	0	Hamlib debug level (0\-6)
+.TE
+.PP
+The
+.B radio_serial_speed
+setting overrides the compiled-in hamlib default baud rate for the
+selected radio model.
+It must match the CAT Rate configured on the radio.
+Common values are 4800, 9600, 19200, 38400, and 115200.
+.SH TNC INTERFACE
+Mercury provides a VARA-compatible TCP TNC interface for ARQ operations.
+The control port accepts text commands terminated by a carriage return,
+and sends asynchronous status responses.
+The data port carries the raw byte stream.
+.SS "Commands (control port)"
+.TP
+.BI "MYCALL " "callsign " "[secondary1 secondary2 ...]"
+Set the local station callsign (up to 15 characters).
+Additional space-separated tokens register secondary callsigns (up to 4);
+Mercury will accept incoming connections addressed to any of them.
+Sending a new MYCALL replaces the primary callsign and clears all
+previously registered secondaries.
+.TP
+.BI "LISTEN " "ON|OFF|CQ"
+Enable or disable listening for incoming connections.
+.B LISTEN CQ
+is treated as
+.BR "LISTEN ON" .
+.TP
+.BI "PUBLIC " "ON|OFF"
+Enable or disable public mode (accept connections from any station).
+.TP
+.BI "CONNECT " "mycall " destcall
+Initiate an ARQ connection from
+.I mycall
+to
+.IR destcall .
+.TP
+.B DISCONNECT
+Disconnect the current ARQ session gracefully.
+The air-side teardown proceeds in the background.
+.TP
+.B ABORT
+Disconnect immediately without air-side teardown.
+All buffers are flushed; the remote peer will time out.
+.TP
+.BI "BW" bandwidth
+Set the channel bandwidth in Hz.
+Valid values:
+.B 500
+(narrow),
+.B 2300
+(full), or
+.B 2750
+(tactical).
+Default is 2300.
+.TP
+.BI "RETRIES " count
+Set the maximum number of retransmission attempts.
+.TP
+.B BUFFER
+Query the number of bytes pending in the transmit buffer.
+.TP
+.B SN
+Query the current signal-to-noise ratio.
+.TP
+.B BITRATE
+Query the current bitrate.
+.TP
+.BI "CQFRAME " "callsign " bandwidth
+Transmit a CQ broadcast frame.
+.I bandwidth
+accepts the same values as
+.BR BW .
+.TP
+.B VERSION
+Return modem identification string.
+Accepted for VARA compatibility.
+.TP
+.B COMPRESSION ON|OFF
+Accepted for VARA compatibility; no-op.
+.TP
+.B CHAT ON|OFF
+.B CHAT ON
+implies
+.BR "LISTEN ON" ;
+.B CHAT OFF
+is a no-op.
+Accepted for VARA compatibility.
+.TP
+.B P2P
+Accepted for VARA compatibility; no-op.
+.TP
+.B IGNOREKISSDCD
+Accepted for VARA compatibility; no-op.
+.SS "Responses (control port)"
+.TP
+.B OK
+Command accepted.
+.TP
+.B WRONG
+Command rejected or malformed.
+.TP
+.BI "CONNECTED " "source " "dest " bandwidth
+ARQ link established between
+.I source
+and
+.IR dest .
+.TP
+.B DISCONNECTED
+ARQ link terminated.
+.TP
+.B PENDING
+Outgoing connection attempt in progress.
+.TP
+.B CANCELPENDING
+Outgoing connection attempt cancelled.
+.TP
+.BI "BUFFER " bytes
+Number of bytes remaining in the transmit buffer.
+Sent periodically and in response to BUFFER queries.
+.TP
+.BI "SN " snr
+Current signal-to-noise ratio in dB (e.g., \(lqSN 12.5\(rq).
+.TP
+.BI "BITRATE (" speed_level ") " bps " BPS"
+Current bitrate in bits per second and the speed ladder level.
+.TP
+.BI "CQFRAME " callsign " " bandwidth
+Received a CQ broadcast from
+.IR callsign .
+.SH FREEDV MODES
+Mercury uses the following FreeDV OFDM waveforms:
+.PP
+.TS
+l l l l.
+Mode	Index	Usage	Notes
+_
+DATAC1	0	Payload	502 bytes/frame, +5 dB SNR
+DATAC3	1	Payload	118 bytes/frame, default startup mode
+DATAC0	2	Payload	6 bytes/frame
+DATAC4	3	Payload	46 bytes/frame, low SNR
+DATAC13	4	Broadcast	6 bytes/frame (replaced by DATAC16 in ARQ)
+DATAC14	5	Broadcast	1 byte/frame
+FSK_LDPC	6	Payload	22 bytes/frame
+DATAC15	7	Payload	22 bytes/frame, lowest SNR (ladder floor)
+DATAC16	8	Control	6 bytes/frame, ARQ control channel
+DATAC17	9	Payload	1172 bytes/frame, intermediate SNR (~+8 dB)
+QAM16C2	10	Payload	1205 bytes/frame, high SNR (~+15 dB)
+.TE
+.PP
+In ARQ mode, DATAC16 is always used for the control channel.
+The payload channel starts at DATAC15 and upgrades through DATAC4,
+DATAC3, DATAC1 and DATAC17 to QAM16C2 as channel conditions permit.
+See docs/MODES.md for measured per-mode performance curves.
+The dual-decoder architecture runs control and payload decoders
+simultaneously.
+.SH DEFAULT PORTS
+.PP
+.TS
+l l l.
+Service	Port	Protocol
+_
+ARQ control	8300	TCP
+ARQ data	8301	TCP
+Broadcast	8100	TCP
+UI (WebSocket)	10000	TCP
+.TE
+.SH EXAMPLES
+Start mercury with default settings (ALSA, DATAC3, port 8300):
+.PP
+.RS
+.nf
+mercury \-i plughw:1,0 \-o plughw:1,0
+.fi
+.RE
+.PP
+Start with verbose logging to a JSONL file:
+.PP
+.RS
+.nf
+mercury \-i plughw:1,0 \-o plughw:1,0 \-v \-L /var/log/mercury.jsonl \-J
+.fi
+.RE
+.PP
+Start with Hamlib radio control (rigctld on localhost):
+.PP
+.RS
+.nf
+mercury \-i plughw:1,0 \-o plughw:1,0 \-R 2 \-A localhost:4532
+.fi
+.RE
+.PP
+Start with Hamlib radio control on a serial port (Yaesu FT-710 on Windows):
+.PP
+.RS
+.nf
+mercury \-i dsound \-o dsound \-R 1049 \-A COM3
+.fi
+.RE
+.PP
+Start with HERMES shared memory PTT control:
+.PP
+.RS
+.nf
+mercury \-i plughw:1,0 \-o plughw:1,0 \-S
+.fi
+.RE
+.PP
+Start with PulseAudio, narrow bandwidth, and GUI enabled over WSS:
+.PP
+.RS
+.nf
+mercury \-x pulse \-m 3 \-G \-T
+.fi
+.RE
+.PP
+Use a custom configuration file:
+.PP
+.RS
+.nf
+mercury \-C /etc/mercury/my_config.ini
+.fi
+.RE
+.PP
+List available modulation modes:
+.PP
+.RS
+.nf
+mercury \-l
+.fi
+.RE
+.PP
+List available sound cards:
+.PP
+.RS
+.nf
+mercury \-z
+.fi
+.RE
+.PP
+List supported Hamlib radio models:
+.PP
+.RS
+.nf
+mercury \-K
+.fi
+.RE
+.SH SIGNALS
+.TP
+.B SIGINT\fR, \fBSIGTERM
+Graceful shutdown.
+Mercury releases audio devices, closes TCP connections, and shuts down
+the radio control interface before exiting.
+.SH SEE ALSO
+.BR rigctld (1),
+.BR freedv (1),
+.BR uucico (8)
+.PP
+HERMES project: https://hermes.radio
+.br
+Mercury repository: https://github.com/Rhizomatica/mercury
+.SH AUTHORS
+Rafael Diniz <rafael@riseup.net>
+.PP
+Part of the HERMES project by Rhizomatica.
+.SH LICENSE
+GNU General Public License version 3 or later.
+.br
+https://www.gnu.org/licenses/gpl-3.0.html
