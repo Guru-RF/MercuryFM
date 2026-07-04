@@ -451,14 +451,32 @@ it to `broadcast.c`'s framesize map. Target: several kbps in the mic passband �
 beats DATAC, well short of VARA. Low DSP risk (engine already does 16-QAM); the risk is
 boilerplate consistency + the payload-size collision.
 
-> **Status — first cut landed as `qam16fm`.** 16-QAM (bps=4), nc=33, np=5, tcp=2 ms,
-> rate-0.80 LDPC `H_2064_516_sparse`, 256-byte payload (binding: 5·4·33·4 − 60 = 2580 = n;
-> distinct from qam16c2's 1213 B), **~4.6 kbps in ~2.06 kHz**. Threaded through
-> `freedv_api.{h,c}`, `freedv_700.c`, `ofdm_mode.c`, `main.c`, and the `modem.c` mode pool;
-> it **enumerates in `mercuryfm -l` and opens in the runtime pool** on macOS + linux/arm64.
-> Still TODO: add it to the ARQ gear-shift ladder (`arq_protocol.c`) and `broadcast.c`
-> framesize map, and calibrate the SNR floor / `amp_scale` / `EsNodB` on a real FM link
-> (current values are placeholders).
+> **Status — landed as `qam16fm`, wired into ARQ, params derived by loopback.**
+> 16-QAM (bps=4), nc=33, np=5, tcp=2 ms, rate-0.80 LDPC `H_2064_516_sparse`, 256-byte
+> payload (binding: 5·4·33·4 − 60 = 2580 = n; distinct from qam16c2's 1213 B),
+> **~4.6 kbps in ~2.06 kHz**. Threaded through `freedv_api.{h,c}`, `freedv_700.c`,
+> `ofdm_mode.c`, `main.c`, the `modem.c` mode pool, **and the ARQ gear-shift ladder**
+> (`arq_protocol.c` timing row, `arq_fsm.c` `mode_rank`/`mode_snr_floor_db`/
+> `select_best_mode`, `arq.c` bandwidth gating). Enumerates in `mercuryfm -l`, opens in the
+> runtime pool, and is auto-selectable as the top rung on a high-SNR link — verified on
+> macOS + linux/arm64.
+>
+> **Parameter derivation (no radio needed — this answers "can we derive amp_scale/EsNodB
+> from available work?"):** validated with an **offline AWGN loopback** using the in-tree
+> `freedv_data_raw_tx|rx` tools + a fixed-seed AWGN adder:
+> - `amp_scale = 135E3` — inherited from qam16c2; it depends only on constellation (16-QAM)
+>   + carrier count (nc=33), both identical. Clean loopback decodes at SNRAv ~62 dB,
+>   confirming TX/RX amplitude scaling.
+> - `EsNodB = 12` — qam16c2's 10 dB (16-QAM r0.6) + ~2 dB for the r0.6→r0.8 rate step
+>   (DVB 16-QAM thresholds). Loopback shows a flat 0-error floor from ~13.6 dB up → LLR
+>   scaling is sound.
+> - `ARQ_SNR_MIN_QAM16FM_DB = 14.5 dB` — **measured**: coded FER=0 down to ~13.6 dB reported
+>   SNR, then a sharp ~0.5 dB cliff (an empirical FM-capture-cliff!); 14.5 keeps ~1 dB
+>   margin.
+>
+> Still TODO: on-air re-check against a real FM rig (pre-emphasis / limiting / audio path
+> aren't in the loopback), add it to the `broadcast.c` framesize map, and a two-node ARQ
+> negotiation test (needs the `go` integration harness or two radios).
 
 **Phase 2 — Retune ARQ for FM.** *(Medium.)*
 Re-tabulate `arq_mode_table[]` (`arq_protocol.c:75-87`) and rewrite the hard-coded

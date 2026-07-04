@@ -276,6 +276,7 @@ static void send_mode_negotiation(arq_session_t *sess, arq_subtype_t subtype, in
  *  between them are misleading. */
 static int mode_rank(int mode)
 {
+    if (mode == FREEDV_MODE_QAM16FM) return 6;
     if (mode == FREEDV_MODE_QAM16C2) return 5;
     if (mode == FREEDV_MODE_DATAC17) return 4;
     if (mode == FREEDV_MODE_DATAC1)  return 3;
@@ -290,7 +291,8 @@ static int clamp_payload_mode_to_bandwidth(int mode)
     if (!arq_bandwidth_allows_mode(mode) &&
         (mode == FREEDV_MODE_DATAC1 ||
          mode == FREEDV_MODE_DATAC17 ||
-         mode == FREEDV_MODE_QAM16C2))
+         mode == FREEDV_MODE_QAM16C2 ||
+         mode == FREEDV_MODE_QAM16FM))
         return FREEDV_MODE_DATAC3;
 
     return mode;
@@ -307,6 +309,7 @@ static float mode_snr_floor_db(int mode)
 {
     switch (mode)
     {
+    case FREEDV_MODE_QAM16FM: return ARQ_SNR_MIN_QAM16FM_DB;
     case FREEDV_MODE_QAM16C2: return ARQ_SNR_MIN_QAM16C2_DB;
     case FREEDV_MODE_DATAC17: return ARQ_SNR_MIN_DATAC17_DB;
     case FREEDV_MODE_DATAC1:  return ARQ_SNR_MIN_DATAC1_DB;
@@ -426,6 +429,15 @@ static int select_best_mode(const arq_session_t *sess, int backlog)
     /* For the current mode, stay if SNR is at or above base threshold.
      * For a higher mode, upgrade only if SNR exceeds threshold + hysteresis.
      * This asymmetry prevents rapid oscillation at mode boundaries. */
+    if (arq_bandwidth_allows_mode(FREEDV_MODE_QAM16FM))
+    {
+        float qfm_thresh = (cur_rank >= mode_rank(FREEDV_MODE_QAM16FM))
+                           ? ARQ_SNR_MIN_QAM16FM_DB
+                           : ARQ_SNR_MIN_QAM16FM_DB + ARQ_SNR_HYST_DB;
+        if (peer_snr >= qfm_thresh && backlog >= ARQ_BACKLOG_MIN_QAM16FM)
+            return FREEDV_MODE_QAM16FM;
+    }
+
     if (arq_bandwidth_allows_mode(FREEDV_MODE_QAM16C2))
     {
         float qc2_thresh = (cur_rank >= mode_rank(FREEDV_MODE_QAM16C2))

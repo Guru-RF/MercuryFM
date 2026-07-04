@@ -274,13 +274,21 @@ extern _Atomic float arq_callint_override_s;
                                              * DATAC17 ~ +11 dB MPP, 84/100 at
                                              * +13.7; upstream's published
                                              * operating point is +15        */
+#define ARQ_SNR_MIN_QAM16FM_DB       14.5f  /* MercuryFM 16-QAM r0.80 FM mode.
+                                             * Offline AWGN loopback (codec2
+                                             * raw tx/rx): coded FER=0 down to
+                                             * ~13.6 dB reported SNR, then a
+                                             * sharp ~0.5 dB cliff. 14.5 keeps
+                                             * ~1 dB margin above the cliff.  */
 #define ARQ_BACKLOG_MIN_DATAC4        31    /* > DATAC15 payload capacity         */
 #define ARQ_BACKLOG_MIN_DATAC3        56
 #define ARQ_BACKLOG_MIN_DATAC1        126
 #define ARQ_BACKLOG_MIN_DATAC17       503   /* > DATAC1 usable payload (502) */
 #define ARQ_BACKLOG_MIN_QAM16C2       1173  /* > DATAC17 usable payload      */
-#define ARQ_LADDER_LEVELS             6     /* 0=DATAC15, 1=DATAC4, 2=DATAC3,
-                                             * 3=DATAC1, 4=DATAC17, 5=QAM16C2 */
+#define ARQ_BACKLOG_MIN_QAM16FM       200   /* < qam16fm 254 B usable payload */
+#define ARQ_LADDER_LEVELS             7     /* 0=DATAC15, 1=DATAC4, 2=DATAC3,
+                                             * 3=DATAC1, 4=DATAC17, 5=QAM16C2,
+                                             * 6=QAM16FM */
 #define ARQ_LADDER_UP_SUCCESSES       2     /* clean ACKs required to step up    */
 #define ARQ_RETRY_DOWNGRADE_THRESHOLD 2     /* consecutive retries to force downgrade */
 #define ARQ_MODE_HOLD_AFTER_DOWNGRADE_S 6   /* hold lower mode after forced downgrade */

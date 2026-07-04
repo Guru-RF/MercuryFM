@@ -326,7 +326,8 @@ bool arq_bandwidth_allows_mode(int mode)
      * session bandwidth. */
     if (mode == FREEDV_MODE_DATAC1 ||
         mode == FREEDV_MODE_DATAC17 ||
-        mode == FREEDV_MODE_QAM16C2)
+        mode == FREEDV_MODE_QAM16C2 ||
+        mode == FREEDV_MODE_QAM16FM)
         return arq_effective_bandwidth_hz() > ARQ_BANDWIDTH_NARROW_HZ;
 
     return true;

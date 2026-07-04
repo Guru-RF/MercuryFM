@@ -81,6 +81,7 @@ const arq_mode_timing_t arq_mode_table[] = {
     {  FREEDV_MODE_DATAC1,    4.81f,     1.0f,      12.0f,       13.0f,          510,   1 },
     {  FREEDV_MODE_DATAC17,   7.40f,     1.0f,      14.0f,       15.0f,          1180,   1 },
     {  FREEDV_MODE_QAM16C2,   3.70f,     1.0f,      11.0f,       12.0f,          1213,   1 },
+    {  FREEDV_MODE_QAM16FM,   0.45f,     1.0f,      7.0f,        8.0f,           256,   1 },
 };
 
 const int arq_mode_table_count =

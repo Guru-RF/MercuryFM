@@ -246,6 +246,8 @@ int main(int argc, char *argv[]) {
     mode = FREEDV_MODE_DATAC17;
   if (!strcmp(argv[dx], "QAM16C2") || !strcmp(argv[dx], "qam16c2"))
     mode = FREEDV_MODE_QAM16C2;
+  if (!strcmp(argv[dx], "QAM16FM") || !strcmp(argv[dx], "qam16fm"))
+    mode = FREEDV_MODE_QAM16FM;
   if (!strcmp(argv[dx], "CUSTOM") || !strcmp(argv[dx], "custom"))
     mode = FREEDV_MODE_DATA_CUSTOM;
   if (mode == -1) {
