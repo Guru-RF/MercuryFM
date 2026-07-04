@@ -97,6 +97,7 @@ third-party component licenses are in **[NOTICE.md](NOTICE.md)**.
 | Path | What |
 |---|---|
 | [NOTES.md](NOTES.md) | Feasibility audit, FM data-rate projections vs VARA, license analysis, roadmap |
+| [TODO.md](TODO.md) | Actionable task checklist (OTA lab, Windows build, Winlink/Pat, DSP roadmap) |
 | [NOTICE.md](NOTICE.md) | Attribution + third-party license inventory |
 | [README.upstream.md](README.upstream.md) | Upstream Mercury README (full build/run/config/TNC reference) |
 | [Dockerfile](Dockerfile) | Linux/arm64 build via Apple `container` (or Docker/Podman) |
