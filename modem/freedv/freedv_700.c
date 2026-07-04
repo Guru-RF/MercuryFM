@@ -202,6 +202,7 @@ void freedv_ofdm_data_open(struct freedv *f, struct freedv_advanced *adv) {
   if (f->mode == FREEDV_MODE_DATAC16) strcpy(mode, "datac16");
   if (f->mode == FREEDV_MODE_DATAC17) strcpy(mode, "datac17");
   if (f->mode == FREEDV_MODE_QAM16C2) strcpy(mode, "qam16c2");
+  if (f->mode == FREEDV_MODE_QAM16FM) strcpy(mode, "qam16fm");
   if (f->mode == FREEDV_MODE_DATA_CUSTOM) {
     assert(adv != NULL);
     assert(adv->config != NULL);
@@ -454,6 +455,7 @@ static float freedv_snr_calib(int mode, float snr_raw) {
     case FREEDV_MODE_DATAC17: return snr_raw + 3.5f;
     case FREEDV_MODE_DATAC3:  return snr_raw + 5.0f;
     case FREEDV_MODE_QAM16C2: return snr_raw + 9.0f;
+    case FREEDV_MODE_QAM16FM: return snr_raw + 9.0f; /* FM 16-QAM r0.8 scaffold; needs OTA calibration */
     default:                  return snr_raw; /* DATAC15/DATAC16 read true */
   }
 }

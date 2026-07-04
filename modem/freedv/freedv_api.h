@@ -70,6 +70,8 @@ extern "C" {
 // Ported from the Rhizomatica codec2 fork (enum renumbered: the fork
 // uses 22, which collides with FREEDV_MODE_DATAC15 here)
 #define FREEDV_MODE_QAM16C2 25
+// MercuryFM: FM-tuned 16-QAM data mode (flat VHF/UHF FM channel).
+#define FREEDV_MODE_QAM16FM 26
 
 // Sample rates used
 #define FREEDV_FS_8000 8000
@@ -166,6 +168,9 @@ extern "C" {
 #endif
 #if !defined(FREEDV_MODE_QAM16C2_EN)
 #define FREEDV_MODE_QAM16C2_EN FREEDV_MODE_EN_DEFAULT
+#endif
+#if !defined(FREEDV_MODE_QAM16FM_EN)
+#define FREEDV_MODE_QAM16FM_EN FREEDV_MODE_EN_DEFAULT
 #endif
 
 #define FDV_MODE_ACTIVE(mode_name, var) \

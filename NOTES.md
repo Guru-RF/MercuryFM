@@ -451,6 +451,15 @@ it to `broadcast.c`'s framesize map. Target: several kbps in the mic passband �
 beats DATAC, well short of VARA. Low DSP risk (engine already does 16-QAM); the risk is
 boilerplate consistency + the payload-size collision.
 
+> **Status — first cut landed as `qam16fm`.** 16-QAM (bps=4), nc=33, np=5, tcp=2 ms,
+> rate-0.80 LDPC `H_2064_516_sparse`, 256-byte payload (binding: 5·4·33·4 − 60 = 2580 = n;
+> distinct from qam16c2's 1213 B), **~4.6 kbps in ~2.06 kHz**. Threaded through
+> `freedv_api.{h,c}`, `freedv_700.c`, `ofdm_mode.c`, `main.c`, and the `modem.c` mode pool;
+> it **enumerates in `mercuryfm -l` and opens in the runtime pool** on macOS + linux/arm64.
+> Still TODO: add it to the ARQ gear-shift ladder (`arq_protocol.c`) and `broadcast.c`
+> framesize map, and calibrate the SNR floor / `amp_scale` / `EsNodB` on a real FM link
+> (current values are placeholders).
+
 **Phase 2 — Retune ARQ for FM.** *(Medium.)*
 Re-tabulate `arq_mode_table[]` (`arq_protocol.c:75-87`) and rewrite the hard-coded
 `FREEDV_MODE_DATAC*` cascade + per-mode SNR `#define`s in `select_best_mode()` /

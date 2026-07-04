@@ -132,6 +132,42 @@ void ofdm_init_mode(char mode[], struct OFDM_CONFIG *config) {
     config->codename = "H_16200_9720";
     config->tx_bpf_proto = filtP1100S1300;
     config->tx_bpf_proto_n = sizeof(filtP1100S1300) / sizeof(float);
+  } else if (strcmp(mode, "qam16fm") == 0) {
+    /* MercuryFM: FM-tuned 16-QAM data mode for flat VHF/UHF FM voice channels.
+       Phase-1 first FM waveform. Same 16-QAM (bps=4) OFDM engine as qam16c2,
+       but a higher-rate rate-0.80 LDPC (H_2064_516_sparse) and a shorter
+       cyclic prefix (2 ms vs 4 ms) since a flat FM channel has no multipath
+       delay spread to guard. LDPC binding: np*(ns-1)*nc*bps - nuwbits =
+       5*4*33*4 - 60 = 2580 = codeword n (k=2064 -> 256 B payload, distinct
+       from qam16c2's 1213 B). ~4.7 kbps in ~2.06 kHz on a strong FM signal.
+       SNR floor / amp_scale / EsNodB are placeholders pending OTA calibration. */
+    config->ns = 5;
+    config->np = 5;
+    config->tcp = 0.002;
+    config->ts = 0.016;
+    config->nc = 33;
+    config->bps = 4;
+    config->txtbits = 0;
+    config->nuwbits = 60;
+    assert(config->nuwbits <= MAX_UW_BITS);
+    config->bad_uw_errors = 15;
+    config->ftwindowwidth = 80;
+    config->state_machine = "data";
+    config->amp_est_mode = 1;
+    config->tx_bpf_en = false;
+    config->clip_en = false;
+    config->data_mode = "streaming";
+    config->amp_scale = 135E3;
+    config->rx_bpf_en = false;
+    uint8_t uwfm[] = {1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1,
+                      0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0};
+    memset(config->tx_uw, 0, config->nuwbits);
+    memcpy(config->tx_uw, uwfm, sizeof(uwfm));
+    memcpy(&config->tx_uw[config->nuwbits - sizeof(uwfm)], uwfm, sizeof(uwfm));
+    config->EsNodB = 12;
+    config->codename = "H_2064_516_sparse";
+    config->tx_bpf_proto = filtP1100S1300;
+    config->tx_bpf_proto_n = sizeof(filtP1100S1300) / sizeof(float);
   } else if (strcmp(mode, "datac17") == 0) {
     /* Mercury custom mode: intermediate-SNR fast payload mode.  Same
        big rate-0.6 H_16200_9720 codeword as qam16c2 but QPSK with TX

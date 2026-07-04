@@ -5,10 +5,12 @@ built by reusing the channel-agnostic modem framework of
 **[Rhizomatica Mercury](https://github.com/Rhizomatica/mercury)** (the HERMES HF modem)
 and giving it an FM-optimized physical layer.
 
-> **Status: forked & building.** This repo is a fork of Mercury v2 (upstream commit
-> `5aa5b7b`, v1.9.9). It **builds and runs today** on macOS (Apple Silicon) and Linux
-> (verified on linux/arm64). The FM-specific waveform work has not started yet — see the
-> roadmap in **[NOTES.md](NOTES.md)**.
+> **Status: forked, building, first FM waveform landed.** Fork of Mercury v2 (upstream
+> commit `5aa5b7b`, v1.9.9). It **builds and runs today** on macOS (Apple Silicon) and
+> Linux (verified on linux/arm64). A first FM-tuned mode — **`qam16fm`** (16-QAM,
+> rate-0.80 LDPC, reduced cyclic prefix, ~4.6 kbps in ~2 kHz) — is wired through the FreeDV
+> + modem registry and enumerates in `mercuryfm -l` (Phase 1; on-air calibration pending).
+> See the roadmap and data-rate analysis in **[NOTES.md](NOTES.md)**.
 
 ## Why
 
