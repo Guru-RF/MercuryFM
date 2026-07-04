@@ -57,3 +57,7 @@ claude_context.txt
 context-*.txt
 copilot-*.txt
 screen.jpg
+
+# stray utils test binaries
+utils/watterson_test
+utils/*_test
