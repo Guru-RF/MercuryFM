@@ -61,8 +61,20 @@ actual FM hardware is the gating validation before qam16fm can be called product
 
 ## 🟠 P2 — DSP / waveform (from NOTES §4a, §7)
 
-- [~] **Two-node ARQ negotiation loopback** (fifo backend, no radio) — prove the gear-shift
-      actually selects `qam16fm`. *(In progress.)*
+- [~] **Two-node ARQ negotiation loopback** — *attempted* on macOS via a 2-FIFO audio
+      bridge (two `mercuryfm -x fifo` nodes, cross-wired `-i`/`-o`, driven over the TNC).
+      **Result:** the full stack runs and **real modulated audio crosses the bridge** —
+      node A decoded node B's DATAC16 CALL frame at 16.4 dB SNR and the ARQ FSM advanced
+      LISTENING→ACCEPTING. But the **CALL/ACCEPT connect handshake never completes**: the
+      CALL took ~8 s to cross, and the caller never decodes the ACCEPT (CALLING→
+      DISCONNECTED). Root cause = the unclocked macOS FIFO bridge's large audio
+      latency/jitter desyncing the half-duplex handshake round-trip — an **environmental
+      limitation, not a qam16fm/ARQ-ladder defect** (it hits stock Mercury identically).
+      qam16fm is already proven end-to-end by the codec2 raw loopback (0 coded errors) and
+      is correctly wired into the ladder; only the *live* negotiation is blocked. **Fix:**
+      run it with a real-time-clocked loopback — Linux ALSA `snd-aloop` (as upstream
+      `utils/loopsim`) or a rate-paced relay — or just do it on the OTA bed (real radios
+      have proper timing). Driver script: `scratchpad/drive.py` + the FIFO runbook.
 - [ ] Add `qam16fm` to the **`broadcast.c` framesize map** (`freedv_to_hermes_mode_map[]` /
       `hermes_broadcast_frame_size[]`) so broadcast mode can use it.
 - [ ] **Wide / 25 kHz mode** (~18–24 kbps): raise `config->fs` to ≥16 kHz (rework the 6:1
